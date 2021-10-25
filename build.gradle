@@ -16,6 +16,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
 
 
+
     implementation 'org.springframework.boot:spring-boot-starter-web:2.5.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.5.5'
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.31'
@@ -24,6 +25,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.5'
     testImplementation 'org.jetbrains.kotlin:kotlin-test:1.5.31'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-devtools:2.5.5'
 }
 
 test {
