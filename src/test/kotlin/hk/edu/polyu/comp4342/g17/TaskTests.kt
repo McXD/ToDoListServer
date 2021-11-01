@@ -13,12 +13,13 @@ import kotlin.test.assertEquals
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TaskTests {
-
     @LocalServerPort var port: Int = 0
     @Autowired lateinit var testRestTemplate: TestRestTemplate
-    lateinit var baseUrl: String
+
+    companion object {
+        lateinit var baseUrl: String
+    }
 
     @BeforeAll
     fun init() {
@@ -27,7 +28,7 @@ class TaskTests {
 
     @Test
     fun `should create a task`() {
-        val requestBody = TaskDTO("MyTask", "This is a test task", Date())
+        val requestBody = TaskDTO(null, "MyTask", "This is a test task", Date())
         val response = testRestTemplate.postForObject("$baseUrl/tasks", requestBody, TaskDTO::class.java)
 
         assertEquals(requestBody, response, "Response should be the same as request")

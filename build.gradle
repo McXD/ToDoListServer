@@ -27,6 +27,12 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test:1.5.31'
     implementation 'org.springframework.boot:spring-boot-starter-security:2.5.5'
     implementation 'org.springframework.boot:spring-boot-devtools:2.5.5'
+
+
+
+    testImplementation 'org.springframework.security:spring-security-test:4.2.11.RELEASE'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.5'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
 }
 
 test {

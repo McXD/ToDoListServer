@@ -17,7 +17,10 @@ open class SecurityConfig: WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
         getHttp().run {
+            csrf().disable()
             formLogin().successHandler { _, _, _ -> } // 1. use form login 2. do not redirect
+            authorizeRequests().antMatchers("/api/v1/lists/**").hasRole("user")
+            authorizeRequests().antMatchers("/api/v1/tasks/**").hasRole("user")
         }
     }
 
