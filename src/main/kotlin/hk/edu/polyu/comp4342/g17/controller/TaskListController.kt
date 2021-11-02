@@ -2,13 +2,14 @@ package hk.edu.polyu.comp4342.g17.controller
 
 import hk.edu.polyu.comp4342.g17.dto.*
 import hk.edu.polyu.comp4342.g17.service.PersistentTaskService
+import hk.edu.polyu.comp4342.g17.service.TaskService
 import org.bson.types.ObjectId
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/lists")
 class TaskListController(
-    private val taskService: PersistentTaskService
+    private val taskService: TaskService
 ) {
     @PostMapping
     fun createList(@RequestBody taskListDTO: TaskListDTO): TaskListDTO {
