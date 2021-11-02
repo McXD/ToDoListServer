@@ -1,12 +1,8 @@
 package hk.edu.polyu.comp4342.g17.controller
 
-import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
-import hk.edu.polyu.comp4342.g17.dto.toTaskListDTO
-import hk.edu.polyu.comp4342.g17.dto.toTaskListModel
-import hk.edu.polyu.comp4342.g17.model.TaskList
+import hk.edu.polyu.comp4342.g17.dto.*
 import hk.edu.polyu.comp4342.g17.service.PersistentTaskService
 import org.bson.types.ObjectId
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -15,8 +11,13 @@ class TaskListController(
     private val taskService: PersistentTaskService
 ) {
     @PostMapping
-    fun createList(): TaskListDTO {
-        return taskService.createListFor(getUsername()).toTaskListDTO()
+    fun createList(@RequestBody taskListDTO: TaskListDTO): TaskListDTO {
+        return taskService.createListFor(getUsername(), taskListDTO).toTaskListDTO()
+    }
+
+    @PostMapping("/{taskListId}")
+    fun createTask(@RequestBody task: TaskDTO, @PathVariable taskListId: ObjectId): TaskDTO {
+        return taskService.createTask(task.toTaskModel(), taskListId).toTaskDTO()
     }
 
     @GetMapping
@@ -29,10 +30,8 @@ class TaskListController(
         return taskService.getTaskList(taskListId).get().toTaskListDTO()
     }
 
-    @PatchMapping
-    fun updateList(@RequestBody taskListPatchDTO: TaskListDTO): TaskList {
-        return taskService.updateTaskList(taskListPatchDTO.toTaskListModel())
+    @DeleteMapping("/{taskListId}")
+    fun deleteList(@PathVariable taskListId: ObjectId) {
+        taskService.deleteList(taskListId)
     }
-
-    private fun getUsername() = SecurityContextHolder.getContext().authentication.name
 }

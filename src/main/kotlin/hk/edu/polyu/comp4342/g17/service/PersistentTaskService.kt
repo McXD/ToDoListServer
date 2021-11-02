@@ -1,5 +1,7 @@
 package hk.edu.polyu.comp4342.g17.service
 
+import hk.edu.polyu.comp4342.g17.dto.TaskDTO
+import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
 import hk.edu.polyu.comp4342.g17.model.Task
 import hk.edu.polyu.comp4342.g17.model.TaskList
 import hk.edu.polyu.comp4342.g17.model.User
@@ -8,40 +10,42 @@ import hk.edu.polyu.comp4342.g17.repository.TaskRepository
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.NullPointerException
 import java.util.*
 
 @Service
-class PersistentTaskService {
-    @Autowired private lateinit var taskRepo: TaskRepository
-    @Autowired private lateinit var taskListRepo: TaskListRepository
-
-    fun createListFor(username: String): TaskList {
+class PersistentTaskService(
+    var taskRepo: TaskRepository,
+    var taskListRepo: TaskListRepository
+): TaskService {
+    @Throws(NullPointerException::class)
+    override fun createListFor(username: String, baseList: TaskListDTO): TaskList {
         return taskListRepo.insert(
-            TaskList(ObjectId(), username))
+            TaskList(ObjectId(),
+                baseList.title ?: throw NullPointerException("title"),
+                username))
     }
 
-    fun getTaskList(listId: ObjectId): Optional<TaskList> {
+    override fun getTaskList(listId: ObjectId): Optional<TaskList> {
         return taskListRepo.findById(listId)
     }
 
-    fun getAllTaskListsForUser(username: String): List<TaskList> {
+    override fun getAllTaskListsForUser(username: String): List<TaskList> {
         return taskListRepo.findByUsername(username)
     }
 
-    @Throws(NoSuchElementException::class)
-    fun updateTaskList(taskListPatch: TaskList): TaskList {
-        val list = getTaskList(taskListPatch.id!!).get()
-        list.applyPatch(taskListPatch)
-        return taskListRepo.save(list) // overwrite?
+    override fun updateTaskList(patch: TaskListDTO): TaskList {
+        TODO("Not yet implemented")
     }
 
+
     @Throws(NoSuchElementException::class)
-    fun deleteList(listId: ObjectId) {
+    override fun deleteList(listId: ObjectId) {
         taskListRepo.delete(getTaskList(listId).get())
     }
 
     @Throws(NoSuchElementException::class)
-    fun createTask(task: Task, listId: ObjectId): Task {
+    override fun createTask(task: Task, listId: ObjectId): Task {
         val taskCreated = taskRepo.insert(task)
 
         // update the task list
@@ -52,20 +56,17 @@ class PersistentTaskService {
         return taskCreated
     }
 
-    fun getTask(taskId: ObjectId): Optional<Task> {
+    override fun getTask(taskId: ObjectId): Optional<Task> {
         return taskRepo.findById(taskId)
     }
 
-    @Throws(NoSuchElementException::class)
-    fun updateTask(taskPatch: Task): Task {
-        val task = getTask(taskPatch.id!!).get()
-        task.applyPatch(taskPatch)
-
-        return taskRepo.save(task)
+    override fun updateTask(patch: TaskDTO): Task {
+        TODO("Not yet implemented")
     }
 
+
     @Throws(NoSuchElementException::class)
-    fun deleteTask(taskId: ObjectId) {
+    override fun deleteTask(taskId: ObjectId) {
         taskRepo.delete(getTask(taskId).get())
     }
 }

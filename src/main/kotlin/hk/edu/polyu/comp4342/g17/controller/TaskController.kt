@@ -12,17 +12,12 @@ import org.springframework.web.bind.annotation.*
 class TaskController(
     private val taskService: PersistentTaskService
 ) {
-    @PostMapping("{taskListId}")
-    fun createTask(@RequestBody task: TaskDTO, @PathVariable taskListId: ObjectId): TaskDTO {
-        return taskService.createTask(task.toTaskModel(), taskListId).toTaskDTO()
-    }
-
-    @GetMapping("{taskId}")
+    @GetMapping("/{taskId}")
     fun getTask(@PathVariable taskId: ObjectId): TaskDTO {
         return taskService.getTask(taskId).get().toTaskDTO()
     }
 
-    @DeleteMapping("{taskId}")
+    @DeleteMapping("/{taskId}")
     fun deleteTask(@PathVariable taskId: ObjectId) {
         taskService.deleteTask(taskId)
     }

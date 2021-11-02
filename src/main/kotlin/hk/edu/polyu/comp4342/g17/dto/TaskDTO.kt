@@ -5,20 +5,20 @@ import org.bson.types.ObjectId
 import java.util.*
 
 data class TaskDTO(
-    var id: String? = null,
-    var title: String? = "",
-    var details: String? = "",
-    var due: Date? = null
+    var id: String = "",
+    var title: String? = null,
+    var details: String? = null,
+    var isDone: Boolean? = null
 )
 
 fun TaskDTO.toTaskModel(): Task {
     return Task(
-        ObjectId(id), title, details, due
+        ObjectId(id), title!!, details!!, isDone!!
     )
 }
 
 fun Task.toTaskDTO(): TaskDTO {
     return TaskDTO(
-        id?.toHexString(), title, detail, due
+        id.toHexString(), title, detail, isDone
     )
 }

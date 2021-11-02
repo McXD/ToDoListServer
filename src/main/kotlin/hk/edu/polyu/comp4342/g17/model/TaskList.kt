@@ -9,15 +9,16 @@ import org.springframework.data.mongodb.core.mapping.Document
 // Basic task meta data?
 @Document("task_list")
 class TaskList(
-    @Id val id: ObjectId?,
-    val username: String?,
-    @DBRef val tasks: MutableList<Task>? = mutableListOf()
+    @Id val id: ObjectId,
+    val title: String,
+    val username: String, // belong to
+    @DBRef val tasks: MutableList<Task> = mutableListOf()
 ) {
     fun addTask(task: Task) {
-        tasks!!.add(task)
+        tasks.add(task)
     }
 
     fun deleteTask(task: Task): Boolean {
-        return tasks!!.remove(task)
+        return tasks.remove(task)
     }
 }
