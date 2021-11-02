@@ -1,10 +1,9 @@
-package hk.edu.polyu.comp4342.g17
+package hk.edu.polyu.comp4342.g17.service
 
 import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
 import hk.edu.polyu.comp4342.g17.model.TaskList
 import hk.edu.polyu.comp4342.g17.repository.TaskListRepository
 import hk.edu.polyu.comp4342.g17.repository.TaskRepository
-import hk.edu.polyu.comp4342.g17.service.PersistentTaskService
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,7 +16,7 @@ import org.mockito.ArgumentMatchers.any as anyArg
 /**
  * Test [PersistentTaskService] with mock repositories.
  */
-class ServiceTest {
+class PersistentTaskServiceTest {
     private lateinit var taskService: PersistentTaskService
 
     @Mock lateinit var taskRepository: TaskRepository

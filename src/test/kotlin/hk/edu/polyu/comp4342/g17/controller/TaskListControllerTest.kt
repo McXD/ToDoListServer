@@ -1,5 +1,6 @@
-package hk.edu.polyu.comp4342.g17
+package hk.edu.polyu.comp4342.g17.controller
 
+import hk.edu.polyu.comp4342.g17.asJsonString
 import hk.edu.polyu.comp4342.g17.dto.TaskDTO
 import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
 import hk.edu.polyu.comp4342.g17.model.TaskList
@@ -26,7 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(username = "user1", password = "test", roles = ["user"]) // Set the security context for current requests
-class WebTest {
+class TaskListControllerTest {
     private val baseUrl = "/api/v1/lists"
 
     @Autowired

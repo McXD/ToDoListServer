@@ -1,7 +1,6 @@
-package hk.edu.polyu.comp4342.g17
+package hk.edu.polyu.comp4342.g17.repository
 
 import hk.edu.polyu.comp4342.g17.model.Task
-import hk.edu.polyu.comp4342.g17.repository.TaskRepository
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +17,7 @@ import kotlin.test.assertEquals
  */
 @Testcontainers
 @DataMongoTest
-class RepositoryTest {
+class TaskRepositoryTest {
     companion object {
         @Container
         val mongoDbContainer: MongoDBContainer = MongoDBContainer("mongo:5.0.3")
