@@ -16,11 +16,6 @@ class TaskListController(
         return taskService.createListFor(getUsername(), taskListDTO).toTaskListDTO()
     }
 
-    @PostMapping("/{taskListId}")
-    fun createTask(@RequestBody task: TaskDTO, @PathVariable taskListId: ObjectId): TaskDTO {
-        return taskService.createTask(task, taskListId).toTaskDTO()
-    }
-
     @GetMapping
     fun getListsForUser(): List<TaskListDTO> {
         return taskService.getAllTaskListsForUser(getUsername()).map { it.toTaskListDTO() }

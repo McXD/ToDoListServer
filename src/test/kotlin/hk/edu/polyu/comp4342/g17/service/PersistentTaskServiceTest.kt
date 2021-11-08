@@ -76,11 +76,12 @@ class PersistentTaskServiceTest {
     @Order(4)
     fun `can create a task in a list`() {
         val taskDto = TaskDTO(
+            listId = taskListId.toHexString(),
             title = "Task 1-1",
             details = "Task 1 in List 1"
         )
 
-        val task = taskService.createTask(taskDto, taskListId)
+        val task = taskService.createTask(taskDto)
 
         assertThat(task.title, equalTo("Task 1-1"))
 

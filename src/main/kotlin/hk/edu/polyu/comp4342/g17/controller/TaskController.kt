@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*
 class TaskController(
     private val taskService: TaskService
 ) {
+    @PostMapping
+    fun createTask(@RequestBody task: TaskDTO): TaskDTO {
+        return taskService.createTask(task).toTaskDTO()
+    }
+
     @GetMapping("/{taskId}")
     fun getTask(@PathVariable taskId: ObjectId): TaskDTO {
         return taskService.getTask(taskId).get().toTaskDTO()

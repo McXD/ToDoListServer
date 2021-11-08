@@ -7,6 +7,7 @@ import hk.edu.polyu.comp4342.g17.model.Task
 import hk.edu.polyu.comp4342.g17.service.TaskService
 import org.bson.types.ObjectId
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,10 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.patch
+import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -36,8 +34,30 @@ class TaskControllerTest {
     lateinit var mockTaskService: TaskService
 
     @Test
+    fun `can add task to the given list`() {
+        val mockListId = id()
+        val taskId = id()
+        val taskDTO = TaskDTO(listId = mockListId.toHexString(), title = "My Task", details = "Task created for testing")
+
+        whenever(mockTaskService.createTask(taskDTO)).thenReturn(
+            Task(taskId, mockListId,"My Task", "Task created for testing", false)
+        )
+
+        mockMvc.post(baseUrl){
+            contentType = MediaType.APPLICATION_JSON
+            content = asJsonString(taskDTO)
+        }.andExpect {
+            status().is2xxSuccessful
+            content().contentType(MediaType.APPLICATION_JSON)
+            jsonPath("$.id", Matchers.equalTo(taskId.toHexString()))
+        }.andDo {
+            print()
+        }
+    }
+
+    @Test
     fun `can fetch a given task`() {
-        val task = Task(id(), "Test Task", "Just a Test", false)
+        val task = Task(id(), id(), "Test Task", "Just a Test", false)
 
         whenever(mockTaskService.getTask(task.id)).thenReturn(Optional.of(task))
 
@@ -57,7 +77,7 @@ class TaskControllerTest {
         val patch = TaskDTO(mockTaskId.toHexString(), isDone = true)
 
         whenever(mockTaskService.updateTask(patch)).thenReturn(
-            Task(mockTaskId, "Test Task", "No Details", true)
+            Task(mockTaskId, id(),"Test Task", "No Details", true)
         )
 
         mockMvc.patch(baseUrl) {

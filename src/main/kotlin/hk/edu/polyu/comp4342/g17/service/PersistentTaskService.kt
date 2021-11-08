@@ -44,16 +44,21 @@ class PersistentTaskService(
     }
 
     @Throws(
-        NoSuchElementException::class,
-        NullPointerException::class
+        NoSuchElementException::class, // when list is not found
+        NullPointerException::class, // when element required is not specified
     )
-    override fun createTask(taskDTO: TaskDTO, listId: ObjectId): Task {
+    override fun createTask(taskDTO: TaskDTO): Task {
+        requireNotNull(taskDTO.listId) { "id must be present"}
+        val listId = ObjectId(taskDTO.listId)
+
         val taskList = getTaskList(listId).get()
 
         // initialise the task
-        if (taskDTO.title == null) throw NullPointerException("title") // title must be present
+        requireNotNull(taskDTO.title) { "title must be present" }
+
         taskDTO.id = ObjectId().toHexString() // assign id
         taskDTO.isDone = false // newly created task is not done
+        taskDTO.listId = listId.toHexString() // set list id
 
         val taskCreated = taskRepo.insert(taskDTO.toTaskModel()) // everything else can be provided by the user
 
@@ -79,6 +84,15 @@ class PersistentTaskService(
 
     @Throws(NoSuchElementException::class)
     override fun deleteTask(taskId: ObjectId) {
-        taskRepo.delete(getTask(taskId).get())
+        // need to delete task reference in the list as well
+        val taskToDelete = getTask(taskId).get()
+        val taskListToModify = taskListRepo.findById(taskToDelete.listId).get()
+
+        taskListToModify.deleteTask(taskToDelete)
+
+        taskListRepo.deleteById(taskToDelete.listId)
+        taskListRepo.insert(taskListToModify)
+
+        taskRepo.deleteById(taskToDelete.id)
     }
 }

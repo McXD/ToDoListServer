@@ -33,7 +33,7 @@ class TaskRepositoryTest {
 
     @Test
     fun `should insert a task`() {
-        val task = Task(ObjectId(), "Do Homework", "Finish math homework 4")
+        val task = Task(ObjectId(), ObjectId(), "Do Homework", "Finish math homework 4")
         taskRepository.insert(task)
 
         assertEquals(task, taskRepository.findById(task.id).get())

@@ -55,7 +55,7 @@ class IntegrationTest {
         val title = "My Test List"
         val taskListCreationDTO = TaskListDTO(title = title)
 
-        val returnVal = mockMvc.post("$baseUrl/lists") {
+        mockMvc.post("$baseUrl/lists") {
             contentType = MediaType.APPLICATION_JSON
             content = asJsonString(taskListCreationDTO)
         }.andExpect {
@@ -77,11 +77,12 @@ class IntegrationTest {
     @Order(2)
     fun createTask() {
         val taskDTO = TaskDTO(
+            listId = taskListHexId,
             title = "Test Task 1",
             details = "Just a test task!",
         )
 
-        mockMvc.post("$baseUrl/lists/$taskListHexId") {
+        mockMvc.post("$baseUrl/tasks") {
             contentType = MediaType.APPLICATION_JSON
             content = asJsonString(taskDTO)
         }.andExpect {
@@ -149,6 +150,19 @@ class IntegrationTest {
 
     @Test
     @Order(6)
+    fun retrieveEmptyList() {
+        mockMvc.get("$baseUrl/lists")
+            .andExpect {
+                status().is2xxSuccessful
+                content().contentType(MediaType.APPLICATION_JSON)
+                jsonPath("$[0].tasks.length()", equalTo(0))
+            }.andDo {
+                print()
+            }
+    }
+
+    @Test
+    @Order(7)
     fun deleteList() {
         mockMvc.delete("$baseUrl/lists/$taskListHexId")
             .andExpect {

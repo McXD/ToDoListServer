@@ -42,13 +42,18 @@ class TaskListControllerTest {
 
     @Test
     fun `can fetch all TaskLists for a user`() {
-        val task_1_1 = Task(id(), "Task 1 in List 1", "No Details")
-        val task_1_2 = Task(id(), "Task 2 in List 1", "No Details")
-        val task_2_1 = Task(id(), "Task 1 in List 2", "No Details")
-        val task_2_2 = Task(id(), "Task 2 in List 2", "No Details")
+        val taskList1 = TaskList(id(), "List 1", "user1")
+        val taskList2 = TaskList(id(), "List 2", "user1")
 
-        val taskList1 = TaskList(id(), "List 1", "user1", mutableListOf(task_1_1, task_1_2))
-        val taskList2 = TaskList(id(), "List 2", "user1", mutableListOf(task_2_1, task_2_2))
+        val task_1_1 = Task(id(), taskList1.id,"Task 1 in List 1", "No Details")
+        val task_1_2 = Task(id(), taskList1.id,"Task 2 in List 1", "No Details")
+        val task_2_1 = Task(id(), taskList2.id, "Task 1 in List 2", "No Details")
+        val task_2_2 = Task(id(), taskList2.id, "Task 2 in List 2", "No Details")
+
+        taskList1.addTask(task_1_1)
+        taskList1.addTask(task_1_2)
+        taskList2.addTask(task_2_1)
+        taskList2.addTask(task_2_2)
 
         whenever(mockTaskService.getAllTaskListsForUser("user1")).thenReturn(
             listOf(taskList1, taskList2)
@@ -104,33 +109,6 @@ class TaskListControllerTest {
             }.andDo {
                 print()
             }
-    }
-
-    /**
-     * POST $baseUrl/{taskListId}
-     *
-     * TaskDTO
-     */
-    @Test
-    fun `can add task to the given list`() {
-        val mockListId = id()
-        val taskId = id()
-        val taskDTO = TaskDTO(title = "My Task", details = "Task created for testing")
-
-        whenever(mockTaskService.createTask(taskDTO, mockListId)).thenReturn(
-            Task(taskId, "My Task", "Task created for testing", false)
-        )
-
-        mockMvc.post("$baseUrl/${mockListId.toHexString()}"){
-            contentType = MediaType.APPLICATION_JSON
-            content = asJsonString(taskDTO)
-        }.andExpect {
-            status().is2xxSuccessful
-            content().contentType(MediaType.APPLICATION_JSON)
-            jsonPath("$.id", equalTo(taskId.toHexString()))
-        }.andDo {
-            print()
-        }
     }
 
     fun makeTasKList(): TaskListDTO {
