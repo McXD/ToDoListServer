@@ -18,6 +18,11 @@ class TaskController(
         return taskService.getTask(taskId).get().toTaskDTO()
     }
 
+    @PatchMapping()
+    fun updateTask(@RequestBody patch: TaskDTO): TaskDTO {
+        return taskService.updateTask(patch).toTaskDTO()
+    }
+
     @DeleteMapping("/{taskId}")
     fun deleteTask(@PathVariable taskId: ObjectId) {
         taskService.deleteTask(taskId)

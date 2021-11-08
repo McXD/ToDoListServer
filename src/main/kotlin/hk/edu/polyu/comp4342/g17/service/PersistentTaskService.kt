@@ -2,16 +2,16 @@ package hk.edu.polyu.comp4342.g17.service
 
 import hk.edu.polyu.comp4342.g17.dto.TaskDTO
 import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
+import hk.edu.polyu.comp4342.g17.dto.applyPatch
+import hk.edu.polyu.comp4342.g17.dto.toTaskModel
 import hk.edu.polyu.comp4342.g17.model.Task
 import hk.edu.polyu.comp4342.g17.model.TaskList
-import hk.edu.polyu.comp4342.g17.model.User
 import hk.edu.polyu.comp4342.g17.repository.TaskListRepository
 import hk.edu.polyu.comp4342.g17.repository.TaskRepository
 import org.bson.types.ObjectId
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.lang.NullPointerException
 import java.util.*
+import kotlin.NoSuchElementException
 
 @Service
 class PersistentTaskService(
@@ -38,19 +38,27 @@ class PersistentTaskService(
         TODO("Not yet implemented")
     }
 
-
     @Throws(NoSuchElementException::class)
     override fun deleteList(listId: ObjectId) {
         taskListRepo.delete(getTaskList(listId).get())
     }
 
-    @Throws(NoSuchElementException::class)
-    override fun createTask(task: Task, listId: ObjectId): Task {
-        val taskCreated = taskRepo.insert(task)
+    @Throws(
+        NoSuchElementException::class,
+        NullPointerException::class
+    )
+    override fun createTask(taskDTO: TaskDTO, listId: ObjectId): Task {
+        val taskList = getTaskList(listId).get()
+
+        // initialise the task
+        if (taskDTO.title == null) throw NullPointerException("title") // title must be present
+        taskDTO.id = ObjectId().toHexString() // assign id
+        taskDTO.isDone = false // newly created task is not done
+
+        val taskCreated = taskRepo.insert(taskDTO.toTaskModel()) // everything else can be provided by the user
 
         // update the task list
-        val taskList = getTaskList(listId).get()
-        taskList.addTask(task)
+        taskList.addTask(taskCreated)
         taskListRepo.save(taskList)
 
         return taskCreated
@@ -60,10 +68,14 @@ class PersistentTaskService(
         return taskRepo.findById(taskId)
     }
 
+    @Throws(NoSuchElementException::class)
     override fun updateTask(patch: TaskDTO): Task {
-        TODO("Not yet implemented")
-    }
+        val task = taskRepo.findById(ObjectId(patch.id)).get()
+        taskRepo.deleteById(task.id) //TODO: use update method instead of delete and insert new
 
+        task.applyPatch(patch)
+        return taskRepo.insert(task)
+    }
 
     @Throws(NoSuchElementException::class)
     override fun deleteTask(taskId: ObjectId) {

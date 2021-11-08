@@ -18,7 +18,7 @@ class TaskListController(
 
     @PostMapping("/{taskListId}")
     fun createTask(@RequestBody task: TaskDTO, @PathVariable taskListId: ObjectId): TaskDTO {
-        return taskService.createTask(task.toTaskModel(), taskListId).toTaskDTO()
+        return taskService.createTask(task, taskListId).toTaskDTO()
     }
 
     @GetMapping

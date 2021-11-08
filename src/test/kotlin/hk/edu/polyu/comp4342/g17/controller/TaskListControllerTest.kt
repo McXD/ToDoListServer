@@ -3,9 +3,11 @@ package hk.edu.polyu.comp4342.g17.controller
 import hk.edu.polyu.comp4342.g17.asJsonString
 import hk.edu.polyu.comp4342.g17.dto.TaskDTO
 import hk.edu.polyu.comp4342.g17.dto.TaskListDTO
+import hk.edu.polyu.comp4342.g17.id
+import hk.edu.polyu.comp4342.g17.model.Task
 import hk.edu.polyu.comp4342.g17.model.TaskList
+import hk.edu.polyu.comp4342.g17.objectMapper
 import hk.edu.polyu.comp4342.g17.service.TaskService
-import org.bson.types.ObjectId
 import org.hamcrest.Matchers.emptyIterable
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -17,6 +19,8 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -37,9 +41,35 @@ class TaskListControllerTest {
     lateinit var mockTaskService: TaskService
 
     @Test
-    fun `can create an empty list with post`() {
+    fun `can fetch all TaskLists for a user`() {
+        val task_1_1 = Task(id(), "Task 1 in List 1", "No Details")
+        val task_1_2 = Task(id(), "Task 2 in List 1", "No Details")
+        val task_2_1 = Task(id(), "Task 1 in List 2", "No Details")
+        val task_2_2 = Task(id(), "Task 2 in List 2", "No Details")
+
+        val taskList1 = TaskList(id(), "List 1", "user1", mutableListOf(task_1_1, task_1_2))
+        val taskList2 = TaskList(id(), "List 2", "user1", mutableListOf(task_2_1, task_2_2))
+
+        whenever(mockTaskService.getAllTaskListsForUser("user1")).thenReturn(
+            listOf(taskList1, taskList2)
+        )
+
+        mockMvc.get(baseUrl)
+            .andExpect {
+                status().is2xxSuccessful
+                content().contentType(MediaType.APPLICATION_JSON)
+                jsonPath("$.length()", equalTo(2))
+                jsonPath("$[0].tasks.length()", equalTo(2))
+                jsonPath("$[1].tasks.length()", equalTo(2))
+            }.andDo {
+                print()
+            }
+    }
+
+    @Test
+    fun `can create an empty list`() {
         val title = "My Test List"
-        val objectId = ObjectId()
+        val objectId = id()
         val taskListCreationDTO = TaskListDTO(title = title)
 
         whenever(mockTaskService.createListFor("user1", taskListCreationDTO)).thenReturn(
@@ -55,6 +85,62 @@ class TaskListControllerTest {
             jsonPath("$.id", equalTo(objectId.toHexString()))
             jsonPath("$.title", equalTo(title))
             jsonPath("$.tasks", emptyIterable<TaskDTO>())
+        }.andDo {
+            print()
         }
+    }
+
+    /**
+     * DELETE $baseUrl/{taskListId}
+     */
+    @Test
+    fun `can delete the given list`() {
+        val mockTaskListId = id()
+
+        // If no exception is thrown, the deletion is successful
+        mockMvc.delete("$baseUrl/${mockTaskListId.toHexString()}")
+            .andExpect {
+                status().is2xxSuccessful
+            }.andDo {
+                print()
+            }
+    }
+
+    /**
+     * POST $baseUrl/{taskListId}
+     *
+     * TaskDTO
+     */
+    @Test
+    fun `can add task to the given list`() {
+        val mockListId = id()
+        val taskId = id()
+        val taskDTO = TaskDTO(title = "My Task", details = "Task created for testing")
+
+        whenever(mockTaskService.createTask(taskDTO, mockListId)).thenReturn(
+            Task(taskId, "My Task", "Task created for testing", false)
+        )
+
+        mockMvc.post("$baseUrl/${mockListId.toHexString()}"){
+            contentType = MediaType.APPLICATION_JSON
+            content = asJsonString(taskDTO)
+        }.andExpect {
+            status().is2xxSuccessful
+            content().contentType(MediaType.APPLICATION_JSON)
+            jsonPath("$.id", equalTo(taskId.toHexString()))
+        }.andDo {
+            print()
+        }
+    }
+
+    fun makeTasKList(): TaskListDTO {
+        val returnedJsonString = mockMvc.post(baseUrl) {
+            contentType = MediaType.APPLICATION_JSON
+            content = asJsonString(
+                TaskListDTO(title = "Just A Test List")
+            )
+        }.andReturn().response.contentAsString
+
+        return objectMapper.readValue(returnedJsonString, TaskListDTO::class.java)
     }
 }

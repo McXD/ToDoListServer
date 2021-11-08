@@ -30,7 +30,7 @@ interface TaskService {
     fun deleteList(listId: ObjectId)
 
     @Throws(NoSuchElementException::class)
-    fun createTask(task: Task, listId: ObjectId): Task
+    fun createTask(task: TaskDTO, listId: ObjectId): Task
 
     fun getTask(taskId: ObjectId): Optional<Task>
 

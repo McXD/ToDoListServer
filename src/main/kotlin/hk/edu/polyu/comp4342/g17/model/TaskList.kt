@@ -8,9 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 // Basic task meta data?
 @Document("task_list")
-class TaskList(
+data class TaskList(
     @Id val id: ObjectId,
-    val title: String,
+    val title: String, // persistent mapping error
     val username: String, // belong to
     @DBRef val tasks: MutableList<Task> = mutableListOf()
 ) {

@@ -22,6 +22,7 @@ class TaskRepositoryTest {
         @Container
         val mongoDbContainer: MongoDBContainer = MongoDBContainer("mongo:5.0.3")
 
+        @JvmStatic
         @DynamicPropertySource
         fun setUpProp(registry: DynamicPropertyRegistry) {
             registry.add("spring.data.mongodb.uri", mongoDbContainer::getReplicaSetUrl)

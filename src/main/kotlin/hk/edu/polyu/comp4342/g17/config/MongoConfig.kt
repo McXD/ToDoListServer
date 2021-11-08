@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.core.MongoClientFactoryBean
 
-@Configuration
+//@Configuration
 open class MongoConfig {
-    @Bean
+//    @Bean
     open fun mongo(): MongoClientFactoryBean{
         val mongo = MongoClientFactoryBean()
         mongo.setHost("localhost")

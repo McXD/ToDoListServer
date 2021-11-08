@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Task(
     @Id val id: ObjectId,
     var title: String,
-    var detail: String,
+    var detail: String?,
     var isDone: Boolean = false,
 )
