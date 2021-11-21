@@ -1,5 +1,7 @@
 # Mobile ToDo List
 
+[![Java CI with Gradle](https://github.com/McXD/ToDoListServer/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/McXD/ToDoListServer/actions/workflows/gradle.yml)
+
 Project for COMP4342-Mobile Computing at The Hong Kong Polytechnic University.
 
 ## How to Build
